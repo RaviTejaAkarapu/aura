@@ -61,11 +61,6 @@ class MainActivity : AppCompatActivity() {
         startActivity(registerActivity)
     }
 
-    fun logIn(view: View) {
-        signInUser()
-    }
-
-
     var authenticationHandler: AuthenticationHandler = object : AuthenticationHandler {
         override fun authenticationChallenge(continuation: ChallengeContinuation?) {
         }
@@ -92,20 +87,27 @@ class MainActivity : AppCompatActivity() {
 
         override fun onFailure(e: Exception) {
             closeWaitDialog()
-            Toast.makeText(this@MainActivity, "Sign-in failed", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(this@MainActivity, "Sign-in failed", Toast.LENGTH_SHORT).show()
             return
         }
     }
 
-    private fun signInUser() {
+    fun signInUser(view: View) {
         username = inUsername?.getText().toString();
         password = inPassword?.getText().toString();
-        AppHelper.setUser(username);
+        if (username.isNullOrEmpty() || password.isNullOrEmpty()) {
+            Toast.makeText(this, "Enter all the details", Toast.LENGTH_SHORT).show()
+            return
 
-        showWaitDialog("Signing in...");
-        Log.d("MAINACTIVITY", "signing in with username = $username password =$password")
-        AppHelper.getPool().getUser(username).getSessionInBackground(authenticationHandler);
-        startActivity(Intent(this, UserActivity::class.java))
+        } else {
+            AppHelper.setUser(username);
+
+            showWaitDialog("Signing in...");
+            Log.d("MAINACTIVITY", "signing in with username = $username password =$password")
+            AppHelper.getPool().getUser(username).getSessionInBackground(authenticationHandler);
+            startActivity(Intent(this, UserActivity::class.java))
+            finish()
+        }
     }
 
     private fun showWaitDialog(message: String) {
@@ -139,6 +141,7 @@ class MainActivity : AppCompatActivity() {
         userActivity.putExtra("name", username)
         startActivity(userActivity)
         Log.d("MAINACTIVITY", "starting user activity with username ${username}")
+        finish()
     }
 
 }

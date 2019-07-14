@@ -8,6 +8,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser
@@ -33,6 +34,7 @@ class RegisterUserActivity : AppCompatActivity() {
     private var waitDialog: ProgressDialog? = null
     private var usernameInput: String? = null
     private var userPasswd: String? = null
+    private var textViewUserSignUp: TextView? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,6 +55,16 @@ class RegisterUserActivity : AppCompatActivity() {
         init()
     }
 
+    fun logIn(view: View) {
+        signInUser()
+    }
+
+    private fun signInUser() {
+        val registerActivity = Intent(this, MainActivity::class.java)
+        startActivity(registerActivity)
+    }
+
+
     internal var signUpHandler: SignUpHandler = object : SignUpHandler {
         override fun onSuccess(
             user: CognitoUser, signUpConfirmationState: Boolean,
@@ -67,7 +79,7 @@ class RegisterUserActivity : AppCompatActivity() {
                     this@RegisterUserActivity,
                     "Sign up successful!\", \"$usernameInput has been Confirmed",
                     Toast.LENGTH_SHORT
-                )
+                ).show()
 
             } else {
                 // User is not confirmed
@@ -78,7 +90,7 @@ class RegisterUserActivity : AppCompatActivity() {
         override fun onFailure(exception: Exception) {
             closeWaitDialog()
 
-            Toast.makeText(this@RegisterUserActivity, "Sign up failed", Toast.LENGTH_SHORT)
+            Toast.makeText(this@RegisterUserActivity, "Sign up failed", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -112,7 +124,7 @@ class RegisterUserActivity : AppCompatActivity() {
         val confirmActivity = Intent(this, UserActivity::class.java)
         confirmActivity.putExtra("source", "main")
         startActivity(confirmActivity)
-
+        finish()
     }
 
     private fun init() {
@@ -130,6 +142,10 @@ class RegisterUserActivity : AppCompatActivity() {
             usernameInput = phone?.getText().toString()
 
             userpasswordInput = password?.getText().toString()
+            if(usernameInput.isNullOrEmpty()||userpasswordInput.isNullOrEmpty()){
+                Toast.makeText(this,"Enter all the details",Toast.LENGTH_SHORT).show()
+                return@OnClickListener
+            }
             userPasswd = userpasswordInput
 
             showWaitDialog("Signing up...")
