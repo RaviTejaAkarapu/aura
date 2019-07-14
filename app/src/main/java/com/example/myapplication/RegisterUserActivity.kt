@@ -4,12 +4,12 @@ import android.app.AlertDialog
 import android.app.ProgressDialog
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserAttributes
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails
@@ -18,7 +18,7 @@ import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.SignUpHan
 class RegisterUserActivity : AppCompatActivity() {
 
     private var userAttributes: CognitoUserAttributes? = null
-    private var userpasswordInput: String?= null
+    private var userpasswordInput: String? = null
     private val TAG = "SignUp"
 
     private var username: EditText? = null
@@ -63,7 +63,11 @@ class RegisterUserActivity : AppCompatActivity() {
             val regState = signUpConfirmationState
             if (signUpConfirmationState) {
                 // User is already confirmed
-                Toast.makeText(this@RegisterUserActivity,"Sign up successful!\", \"$usernameInput has been Confirmed", Toast.LENGTH_SHORT)
+                Toast.makeText(
+                    this@RegisterUserActivity,
+                    "Sign up successful!\", \"$usernameInput has been Confirmed",
+                    Toast.LENGTH_SHORT
+                )
 
             } else {
                 // User is not confirmed
@@ -74,7 +78,7 @@ class RegisterUserActivity : AppCompatActivity() {
         override fun onFailure(exception: Exception) {
             closeWaitDialog()
 
-            Toast.makeText(this@RegisterUserActivity,"Sign up failed", Toast.LENGTH_SHORT)
+            Toast.makeText(this@RegisterUserActivity, "Sign up failed", Toast.LENGTH_SHORT)
         }
     }
 
@@ -87,7 +91,6 @@ class RegisterUserActivity : AppCompatActivity() {
         intent.putExtra("attribute", cognitoUserCodeDeliveryDetails.attributeName)
         startActivityForResult(intent, 10)
     }
-
 
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -103,7 +106,6 @@ class RegisterUserActivity : AppCompatActivity() {
             }
         }
     }
-
 
 
     private fun confirmUser() {
@@ -175,7 +177,6 @@ class RegisterUserActivity : AppCompatActivity() {
         setResult(RESULT_OK, intent)
         finish()
     }
-
 
 
 }

@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
     var authenticationHandler: AuthenticationHandler = object : AuthenticationHandler {
         override fun authenticationChallenge(continuation: ChallengeContinuation?) {
-
         }
 
         override fun getMFACode(continuation: MultiFactorAuthenticationContinuation?) {
@@ -91,28 +90,17 @@ class MainActivity : AppCompatActivity() {
             getUserAuthentication(authenticationContinuation, username)
         }
 
-//        override fun getMFACode(multiFactorAuthenticationContinuation: MultiFactorAuthenticationContinuation) {
-//            closeWaitDialog()
-//            mfaAuth(multiFactorAuthenticationContinuation)
-//        }
-
         override fun onFailure(e: Exception) {
             closeWaitDialog()
             Toast.makeText(this@MainActivity, "Sign-in failed", Toast.LENGTH_SHORT).show()
             return
         }
-
     }
 
-
     private fun signInUser() {
-
-
         username = inUsername?.getText().toString();
-
-        AppHelper.setUser(username);
-
         password = inPassword?.getText().toString();
+        AppHelper.setUser(username);
 
         showWaitDialog("Signing in...");
         Log.d("MAINACTIVITY", "signing in with username = $username password =$password")
