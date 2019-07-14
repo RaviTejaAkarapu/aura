@@ -30,10 +30,6 @@ class UserActivity : AppCompatActivity() {
         setContentView(R.layout.activity_user)
 
         init()
-
-        findViewById<Button>(R.id.iotButton).setOnClickListener {
-            openPubSub()
-        }
     }
 
     internal var detailsHandler: GetDetailsHandler = object : GetDetailsHandler {
@@ -63,7 +59,6 @@ class UserActivity : AppCompatActivity() {
         return super.onOptionsItemSelected(item)
     }
 
-
     private fun init() {
         // Get the user name
         val extras = intent.extras
@@ -85,7 +80,7 @@ class UserActivity : AppCompatActivity() {
         AppHelper.getPool().getUser(username).getDetailsInBackground(detailsHandler)
     }
 
-    fun openPubSub() {
+    fun openPubSub(view:View) {
         startActivity(Intent(this, SendMessageActivity::class.java))
     }
 
