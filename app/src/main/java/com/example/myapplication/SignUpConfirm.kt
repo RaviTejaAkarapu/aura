@@ -1,16 +1,13 @@
 package com.example.myapplication
 
-import android.content.DialogInterface
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserCodeDeliveryDetails
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.GenericHandler
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.handlers.VerificationHandler
@@ -24,13 +21,11 @@ class SignUpConfirm : AppCompatActivity() {
     private var userName: String? = null
     private var userDialog: AlertDialog? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.content_sign_up_confirm)
 
         init()
-
     }
 
 
@@ -65,7 +60,6 @@ class SignUpConfirm : AppCompatActivity() {
         }
 
         username = findViewById(R.id.editTextConfirmUserId) as EditText
-
         confCode = findViewById(R.id.editTextConfirmCode) as EditText
 
         confirm = findViewById(R.id.confirm_button) as Button
@@ -86,7 +80,6 @@ class SignUpConfirm : AppCompatActivity() {
         userName = username?.getText().toString()
 
         AppHelper.getPool().getUser(userName).resendConfirmationCodeInBackground(resendConfCodeHandler)
-
     }
 
     internal var confHandler: GenericHandler = object : GenericHandler {
@@ -125,31 +118,31 @@ class SignUpConfirm : AppCompatActivity() {
         }
     }
 
-    private fun showDialogMessage(title:String, body:String, exitActivity:Boolean) {
-val builder = AlertDialog.Builder(this)
-builder.setTitle(title).setMessage(body).setNeutralButton("OK"
-) { dialog, which ->
-    try {
-        userDialog?.dismiss()
-        if (exitActivity) {
-            exit()
+    private fun showDialogMessage(title: String, body: String, exitActivity: Boolean) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle(title).setMessage(body).setNeutralButton(
+            "OK"
+        ) { dialog, which ->
+            try {
+                userDialog?.dismiss()
+                if (exitActivity) {
+                    exit()
+                }
+            } catch (e: Exception) {
+                exit()
+            }
         }
-    } catch (e:Exception) {
-        exit()
-    }
-}
         userDialog = builder.create()
-userDialog?.show()
-}
+        userDialog?.show()
+    }
 
     private fun exit() {
-val intent = Intent()
-if (userName == null)
-userName = ""
-intent.putExtra("name", userName)
-setResult(RESULT_OK, intent)
-finish()
-}
-
+        val intent = Intent()
+        if (userName == null)
+            userName = ""
+        intent.putExtra("name", userName)
+        setResult(RESULT_OK, intent)
+        finish()
+    }
 
 }
