@@ -9,9 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import java.io.UnsupportedEncodingException;
-import java.util.UUID;
-
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUser;
 import com.amazonaws.mobileconnectors.cognitoidentityprovider.CognitoUserDetails;
@@ -22,21 +19,13 @@ import com.amazonaws.mobileconnectors.iot.AWSIotMqttNewMessageCallback;
 import com.amazonaws.mobileconnectors.iot.AWSIotMqttQos;
 import com.amazonaws.regions.Regions;
 
+import java.io.UnsupportedEncodingException;
+
 public class SendMessageActivity extends Activity {
 
     static final String LOG_TAG = SendMessageActivity.class.getCanonicalName();
-
-    // --- Constants to modify per your configuration ---
-
-    // Customer specific IoT endpoint
-    // AWS Iot CLI describe-endpoint call returns: XXXXXXXXXX.iot.<region>.amazonaws.com,
     private static final String CUSTOMER_SPECIFIC_ENDPOINT = AppHelper.customerSpecificEndpoint;
-
-    // Cognito pool ID. For this app, pool needs to be unauthenticated pool with
-    // AWS IoT permissions.
     private static final String COGNITO_POOL_ID = "us-east-2:7bcca9cc-0fec-4e43-96ae-a734df9708a2";
-
-    // Region of AWS IoT
     private static final Regions MY_REGION = Regions.US_EAST_2;
 
     CognitoUser user;
@@ -60,65 +49,6 @@ public class SendMessageActivity extends Activity {
     String clientId = null;
 
     CognitoCachingCredentialsProvider credentialsProvider;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_send_message);
-
-        txtSubscribe = (EditText) findViewById(R.id.txtSubscribe);
-        txtTopic = (EditText) findViewById(R.id.txtTopic);
-        txtMessage = (EditText) findViewById(R.id.txtMessage);
-
-        tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
-        tvClientId = (TextView) findViewById(R.id.tvClientId);
-        tvStatus = (TextView) findViewById(R.id.tvStatus);
-
-        btnConnect = (Button) findViewById(R.id.btnConnect);
-        btnConnect.setOnClickListener(connectClick);
-        btnConnect.setEnabled(false);
-
-        btnSubscribe = (Button) findViewById(R.id.btnSubscribe);
-        btnSubscribe.setOnClickListener(subscribeClick);
-
-        btnPublish = (Button) findViewById(R.id.btnPublish);
-        btnPublish.setOnClickListener(publishClick);
-
-        btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
-        btnDisconnect.setOnClickListener(disconnectClick);
-
-        // MQTT client IDs are required to be unique per AWS IoT account.
-        // This UUID is "practically unique" but does not _guarantee_
-        // uniqueness.
-        clientId = AppHelper.clientId;
-        tvClientId.setText(clientId);
-
-        // Initialize the AWS Cognito credentials provider
-        credentialsProvider = new CognitoCachingCredentialsProvider(
-                getApplicationContext(), // context
-                COGNITO_POOL_ID, // Identity Pool ID
-                MY_REGION // Region
-        );
-
-        init();
-
-        // MQTT Client
-        mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
-
-        // The following block uses a Cognito credentials provider for authentication with AWS IoT.
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        btnConnect.setEnabled(true);
-                    }
-                });
-            }
-        }).start();
-    }
-
     View.OnClickListener connectClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -153,7 +83,6 @@ public class SendMessageActivity extends Activity {
                                     tvStatus.setText("Disconnected");
                                 } else {
                                     tvStatus.setText("Disconnected");
-
                                 }
                             }
                         });
@@ -165,15 +94,11 @@ public class SendMessageActivity extends Activity {
             }
         }
     };
-
     View.OnClickListener subscribeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-
             final String topic = txtSubscribe.getText().toString();
-
             Log.d(LOG_TAG, "topic = " + topic);
-
             try {
                 mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
                         new AWSIotMqttNewMessageCallback() {
@@ -202,7 +127,6 @@ public class SendMessageActivity extends Activity {
             }
         }
     };
-
     View.OnClickListener publishClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -218,7 +142,6 @@ public class SendMessageActivity extends Activity {
 
         }
     };
-
     View.OnClickListener disconnectClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -231,46 +154,84 @@ public class SendMessageActivity extends Activity {
 
         }
     };
-
     GetDetailsHandler detailsHandler = new GetDetailsHandler() {
         @Override
         public void onSuccess(CognitoUserDetails cognitoUserDetails) {
-//            closeWaitDialog();
-            // Store details in the AppHandler
             AppHelper.setUserDetails(cognitoUserDetails);
-//            showAttributes();
-            // Trusted devices?
-//            handleTrustedDevice();
         }
 
         @Override
         public void onFailure(Exception exception) {
-//            closeWaitDialog();
-//            showDialogMessage("Could not fetch user details!", AppHelper.formatException(exception), true);
         }
     };
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item){
-        // Find which menu item was selected
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_send_message);
+
+        txtSubscribe = (EditText) findViewById(R.id.txtSubscribe);
+        txtTopic = (EditText) findViewById(R.id.txtTopic);
+        txtMessage = (EditText) findViewById(R.id.txtMessage);
+
+        tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
+        tvClientId = (TextView) findViewById(R.id.tvClientId);
+        tvStatus = (TextView) findViewById(R.id.tvStatus);
+
+        btnConnect = (Button) findViewById(R.id.btnConnect);
+        btnConnect.setOnClickListener(connectClick);
+        btnConnect.setEnabled(false);
+
+        btnSubscribe = (Button) findViewById(R.id.btnSubscribe);
+        btnSubscribe.setOnClickListener(subscribeClick);
+
+        btnPublish = (Button) findViewById(R.id.btnPublish);
+        btnPublish.setOnClickListener(publishClick);
+
+        btnDisconnect = (Button) findViewById(R.id.btnDisconnect);
+        btnDisconnect.setOnClickListener(disconnectClick);
+        clientId = AppHelper.clientId;
+        tvClientId.setText(clientId);
+
+
+        credentialsProvider = new CognitoCachingCredentialsProvider(
+                getApplicationContext(),
+                COGNITO_POOL_ID,
+                MY_REGION
+        );
+
+        init();
+
+        mqttManager = new AWSIotMqttManager(clientId, CUSTOMER_SPECIFIC_ENDPOINT);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        btnConnect.setEnabled(true);
+                    }
+                });
+            }
+        }).start();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
         Integer menuItem = item.getItemId();
-        // Do the task
         if (menuItem == R.id.nav_user_sign_out) {
             user.signOut();
             exit();
         }
-
         return super.onOptionsItemSelected(item);
     }
 
 
     public void init() {
-        // Get the user name
         username = AppHelper.getCurrUser();
         user = AppHelper.getPool().getUser(username);
         getDetails();
-
-
     }
 
     public void exit() {
