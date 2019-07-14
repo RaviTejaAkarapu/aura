@@ -61,6 +61,7 @@ class UserActivity : AppCompatActivity() {
             username = ""
         intent.putExtra("name", username)
         setResult(RESULT_OK, intent)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 
