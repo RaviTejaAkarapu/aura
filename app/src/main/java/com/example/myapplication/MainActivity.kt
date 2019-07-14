@@ -98,7 +98,7 @@ class MainActivity : AppCompatActivity() {
 
         override fun onFailure(e: Exception) {
             closeWaitDialog()
-            Toast.makeText(this@MainActivity, "Sign-in failed", Toast.LENGTH_SHORT)
+            Toast.makeText(this@MainActivity, "Sign-in failed", Toast.LENGTH_SHORT).show()
             return
         }
 
