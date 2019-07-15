@@ -32,8 +32,8 @@ public class SendMessageActivity extends Activity {
     String username;
 
 
-    EditText txtSubscribe;
-    EditText txtTopic;
+    TextView txtSubscribe;
+    TextView txtTopic;
     EditText txtMessage;
 
     TextView tvLastMessage;
@@ -97,7 +97,8 @@ public class SendMessageActivity extends Activity {
     View.OnClickListener subscribeClick = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            final String topic = txtSubscribe.getText().toString();
+            final String topic = "$aws/things/awsiot/shadow/update/accepted";
+//            txtSubscribe.setEnabled(false);
             Log.d(LOG_TAG, "topic = " + topic);
             try {
                 mqttManager.subscribeToTopic(topic, AWSIotMqttQos.QOS0,
@@ -112,6 +113,10 @@ public class SendMessageActivity extends Activity {
                                             Log.d(LOG_TAG, "Message arrived:");
                                             Log.d(LOG_TAG, "   Topic: " + topic);
                                             Log.d(LOG_TAG, " Message: " + message);
+
+                                            message = message.replace("{\n" +"  \"message\": \""," ");
+                                            message = message.replace("\"\n" + "}"," ");
+                                            Log.d(LOG_TAG, " Message Shown to user: " + message);
 
                                             tvLastMessage.setText(message);
 
@@ -131,11 +136,15 @@ public class SendMessageActivity extends Activity {
         @Override
         public void onClick(View v) {
 
-            final String topic = txtTopic.getText().toString();
+            final String topic = "$aws/things/awsiot/shadow/update/accepted";
+//            txtTopic.setEnabled(false);
             final String msg = txtMessage.getText().toString();
+            final String message = "{\n" +
+                    "  \"message\": \""+msg+"\"\n" +
+                    "}";
 
             try {
-                mqttManager.publishString(msg, topic, AWSIotMqttQos.QOS0);
+                mqttManager.publishString(message, topic, AWSIotMqttQos.QOS0);
             } catch (Exception e) {
                 Log.e(LOG_TAG, "Publish error.", e);
             }
@@ -170,8 +179,8 @@ public class SendMessageActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_send_message);
 
-        txtSubscribe = (EditText) findViewById(R.id.txtSubscribe);
-        txtTopic = (EditText) findViewById(R.id.txtTopic);
+        txtSubscribe = (TextView) findViewById(R.id.txtSubscribe);
+        txtTopic = (TextView) findViewById(R.id.txtTopic);
         txtMessage = (EditText) findViewById(R.id.txtMessage);
 
         tvLastMessage = (TextView) findViewById(R.id.tvLastMessage);
